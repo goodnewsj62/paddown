@@ -2,6 +2,7 @@ package com.paddown.paddown.data;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paddown.paddown.utils.Base64EncodedUUID;
 
 import jakarta.persistence.CascadeType;
@@ -12,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -39,12 +41,21 @@ public class Account {
     @Column(name="is_active")
     private boolean is_active =  true;
 
-    @OneToMany(mappedBy ="collection", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy ="creator", cascade = CascadeType.ALL)
+    @JsonIgnore
     private  List<Collection> collections;
 
-    @OneToMany(mappedBy ="note ", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy ="creator", cascade = CascadeType.ALL)
+    @JsonIgnore
     private  List<Note> notes;
 
+    @Column(name="is_staff")
+    private boolean isStaff =  false;
+
+    @Column(name="is_superuser")
+    private boolean isSuperUser =  false;
+
+    @Transient
     private  Base64EncodedUUID b64str;
 
     public Account(Base64EncodedUUID b64str,  String email,  String password, boolean is_active){

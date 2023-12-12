@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -60,6 +61,7 @@ public class Note {
     @JoinColumn(name="collection_id",  referencedColumnName = "id")
     private Collection collection;
 
+    @Transient
     private Base64EncodedUUID b64string;
     
 

@@ -18,6 +18,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -46,13 +47,14 @@ public class Collection {
     private OffsetDateTime lastUpdated;
 
 
-    @OneToMany(mappedBy = "note",  cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "collection",  cascade = CascadeType.ALL)
     private List<Note> notes;
 
     @ManyToOne(optional = false)
     @JoinColumn(name="creator_id",  referencedColumnName ="id" )
     private Account creator;
 
+    @Transient
     private Base64EncodedUUID b64str;
 
 
@@ -63,8 +65,7 @@ public class Collection {
 
 
 
-    public Collection(Base64EncodedUUID b64str,long id, String name, String cid) {
-        this.id = id;
+    public Collection(Base64EncodedUUID b64str, String name) {
         this.name = name;
         if(this.cid.length() <  1){
             this.b64str =  b64str;
