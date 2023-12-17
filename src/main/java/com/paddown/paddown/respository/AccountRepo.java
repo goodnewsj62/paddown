@@ -1,9 +1,11 @@
 package com.paddown.paddown.respository;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.paddown.paddown.data.Account;
 
-public interface AccountRepo extends PagingAndSortingRepository<Account ,  Long> {
-
+public interface AccountRepo extends JpaRepository<Account ,  Long> {
+    Optional<Account> findByEmail(String email);
 }
