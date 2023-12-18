@@ -16,9 +16,13 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
 public class Account {
     
     @Id
@@ -39,7 +43,7 @@ public class Account {
     private String password =  null;
     
     @Column(name="is_active")
-    private boolean is_active =  true;
+    private boolean isActive =  true;
 
     @OneToMany(mappedBy ="creator", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -58,10 +62,12 @@ public class Account {
     @Transient
     private  Base64EncodedUUID b64str;
 
+    //TODO:  add day created
+
     public Account(Base64EncodedUUID b64str,  String email,  String password, boolean is_active){
         this.email =  email;
         this.password =  password;
-        this.is_active =  is_active;
+        this.isActive =  is_active;
 
         if(this.uid.length() <  1){
             this.b64str =  b64str;

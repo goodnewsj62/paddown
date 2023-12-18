@@ -1,5 +1,6 @@
 package com.paddown.paddown.security;
 
+
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,8 @@ public class CustomUserDetailService implements UserDetailsService {
         Optional<Account> account =accountRepository.findByEmail(username);
 
         if(account.isPresent()){
-            // return CustomUserDetail(account.get();)
+            return new CustomUserDetail(account.get());
         }
-        // throw new UsernameNotFoundException("");
-        return null;
+        throw new UsernameNotFoundException("Account does not exists");
     }
 }

@@ -1,13 +1,23 @@
 package com.paddown.paddown.security.filters;
 
 import java.io.IOException;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.paddown.paddown.data.Account;
+import com.paddown.paddown.respository.AccountRepo;
+import com.paddown.paddown.security.CustomUserDetail;
+import com.paddown.paddown.security.JWTUtil;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,7 +27,12 @@ import lombok.AllArgsConstructor;
 
 
 @AllArgsConstructor
+@Component
 public class JWTFilter extends OncePerRequestFilter {
+    @Autowired
+    AccountRepo accountRepository;
+    @Autowired
+    JWTUtil jwtUtil;
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -31,19 +46,34 @@ public class JWTFilter extends OncePerRequestFilter {
         }
         
         String token =  authHeader.replace("Bearer", "");
-        // decode jwt
-    
-        // if jwt is valid and user exists
-            // get user details object for user
-            // create an authentication object with userdetail
-            // add authentication object to security context if context is empty
+        DecodedJWT payload;
+
+        try{
+            payload =  jwtUtil.decodeToken(token);
+        }catch(JWTVerificationException exception){
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String  email =  payload.getSubject();
+        Optional<Account> account = accountRepository.findByEmail(email);
+
+        if(!account.isPresent()){
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
+        
+
         if(SecurityContextHolder.getContext().getAuthentication() == null){
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
-                UserDetails userdetail =  CustomUserDetail();
+                UserDetails userdetail =  new CustomUserDetail(account.get());
                 Authentication authentication = new UsernamePasswordAuthenticationToken(userdetail,  null) ;
                 context.setAuthentication(authentication);
                 SecurityContextHolder.setContext(context);
         }
+
+
         filterChain.doFilter(request, response);
     }
 }
