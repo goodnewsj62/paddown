@@ -5,10 +5,10 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -45,7 +45,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
         
-        String token =  authHeader.replace("Bearer", "");
+        String token =  authHeader.replace("Bearer ", "");
         DecodedJWT payload;
 
         try{
@@ -68,7 +68,8 @@ public class JWTFilter extends OncePerRequestFilter {
         if(SecurityContextHolder.getContext().getAuthentication() == null){
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
                 UserDetails userdetail =  new CustomUserDetail(account.get());
-                Authentication authentication = new UsernamePasswordAuthenticationToken(userdetail,  null) ;
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userdetail,  null,userdetail.getAuthorities()) ;
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 context.setAuthentication(authentication);
                 SecurityContextHolder.setContext(context);
         }
