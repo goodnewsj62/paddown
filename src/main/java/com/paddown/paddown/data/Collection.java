@@ -18,7 +18,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -54,22 +53,19 @@ public class Collection {
     @JoinColumn(name="creator_id",  referencedColumnName ="id" )
     private Account creator;
 
-    @Transient
-    private Base64EncodedUUID b64str;
 
+    public Collection(){
+        genCid();
+    }
 
-    // if(this.uid.length() <  1){
-    //     this.b64str =  b64str;
-    //     this.uid =  this.b64str.getBase64EncodedUUID();
-    // }
-
-
-
-    public Collection(Base64EncodedUUID b64str, String name) {
+    public Collection(String name) {
+        this();
         this.name = name;
-        if(this.cid.length() <  1){
-            this.b64str =  b64str;
-            this.cid = this.b64str.getBase64EncodedUUID();
+    }
+
+    public void genCid(){
+        if(this.cid == null  || this.cid.length() <  1){
+            this.cid =  Base64EncodedUUID.getBase64EncodedUUID();
         }
     }
     

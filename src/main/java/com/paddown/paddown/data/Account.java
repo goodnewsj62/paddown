@@ -13,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -59,19 +58,24 @@ public class Account {
     @Column(name="is_superuser")
     private boolean isSuperUser =  false;
 
-    @Transient
-    private  Base64EncodedUUID b64str;
+
 
     //TODO:  add day created
 
-    public Account(Base64EncodedUUID b64str,  String email,  String password, boolean is_active){
+    public Account(){
+        this.genUid();
+    }
+    
+    public Account(String email,  String password, boolean is_active){
+        this();
         this.email =  email;
         this.password =  password;
         this.isActive =  is_active;
+    }
 
-        if(this.uid.length() <  1){
-            this.b64str =  b64str;
-            this.uid =  this.b64str.getBase64EncodedUUID();
+    public void genUid(){
+        if(this.uid == null  || this.uid.length() <  1){
+            this.uid =  Base64EncodedUUID.getBase64EncodedUUID();
         }
     }
 }

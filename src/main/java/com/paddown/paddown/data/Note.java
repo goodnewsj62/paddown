@@ -15,7 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -61,18 +60,24 @@ public class Note {
     @JoinColumn(name="collection_id",  referencedColumnName = "id")
     private Collection collection;
 
-    @Transient
-    private Base64EncodedUUID b64string;
-    
 
-    public Note(Base64EncodedUUID b64str ,String title,  String content){
+    public Note(){
+        genNid();
+    }
+
+    public Note(String title,  String content){
+        this();
         this.title =  title;
         this.content =  content;
-        if(this.nid.length() <  1){
-            this.b64string =  b64str;
-            this.nid =  this.b64string.getBase64EncodedUUID();
+    }
+
+
+    public void genNid(){
+        if(this.nid == null  || this.nid.length() <  1){
+            this.nid =  Base64EncodedUUID.getBase64EncodedUUID();
         }
     }
+
 
 
 }
