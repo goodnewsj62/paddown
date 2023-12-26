@@ -6,5 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record ConfigProperties(
     String secretKey,
     int tokenexp,
-    int refreshexp
+    int refreshexp,
+    String mediaUrl
 ) {}

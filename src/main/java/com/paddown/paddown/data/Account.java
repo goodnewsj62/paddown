@@ -58,6 +58,9 @@ public class Account {
     @Column(name="is_superuser")
     private boolean isSuperUser =  false;
 
+    @Column(name="image")
+    private String image;
+
 
 
     //TODO:  add day created

@@ -4,4 +4,7 @@ public class EntityNotFound extends RuntimeException {
     public EntityNotFound(String id,  Class<?> entity){
         super( entity.getSimpleName().toLowerCase() + " " +  id +  " does not exists");
     }
+    public EntityNotFound(String message){
+        super( message);
+    }
 }

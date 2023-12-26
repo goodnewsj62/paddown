@@ -1,12 +1,15 @@
 package com.paddown.paddown.services;
 
-import java.util.Optional;
+import org.springframework.core.io.Resource;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.paddown.paddown.data.Account;
 
 public interface AccountService {
-    Optional<Account>  getAccountByUsername(String username);
-    Optional<Account> getAccountById(long id);
+    Account  getAccountByUsername(String username);
+    Account getAccountById(long id);
     Account createAccount(Account user);
-    Optional<Account>  updateAccount(Account user);
+    Account  updateAccount(Account user);
+    void saveProfileImage(MultipartFile file, String username);
+    Resource  getProfileImage(String username);
 }
