@@ -5,6 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,20 +36,21 @@ public class AccountController {
     public ResponseEntity<HttpStatus> get(){
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+    // update password
 
-    @PostMapping("/upload/profile")
-    public ResponseEntity<HttpStatus> uploadProfileImage(@RequestParam("file")  MultipartFile file){
-        
-        return ResponseEntity.status(HttpStatus.GONE).build();
+    @PostMapping("/{username}/upload/profile")
+    public ResponseEntity<HttpStatus> uploadProfileImage(@PathVariable(name = "username") String username, @RequestParam("file")  MultipartFile file){
+        accountService.saveProfileImage(file, username);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
     
-    @GetMapping("/upload/profile")
-    public ResponseEntity<Resource> fetchProfileImage(){
-        Resource resource =  null;
+    @GetMapping("/{username}/profile")
+    public ResponseEntity<Resource> fetchProfileImage(@PathVariable("username") String username){
+        Resource resource =  accountService.getProfileImage(username);
 
-        // if (resource == null)
-		// 	return ResponseEntity.notFound().build();
+        if (resource == null)
+			return ResponseEntity.notFound().build();
         
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,  "attachment; filename=\"" + "" + "\"").body(resource);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,  "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
     }
 }

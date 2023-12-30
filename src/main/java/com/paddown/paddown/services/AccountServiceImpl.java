@@ -1,5 +1,7 @@
 package com.paddown.paddown.services;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -22,6 +24,8 @@ import com.paddown.paddown.error.EntityNotFound;
 import com.paddown.paddown.error.StorageException;
 import com.paddown.paddown.respository.AccountRepo;
 import com.paddown.paddown.utils.Base64EncodedUUID;
+
+import net.coobird.thumbnailator.Thumbnails;
 
 @Service
 public class  AccountServiceImpl implements AccountService{
@@ -85,14 +89,23 @@ public class  AccountServiceImpl implements AccountService{
             try{
                 
                 if(!Files.exists(this.rootPath.toAbsolutePath())){
-                        Files.createDirectory(this.rootPath.toAbsolutePath());
+                        Files.createDirectories(this.rootPath.toAbsolutePath());
                 }
+                
+                String[] fileParts =  file.getOriginalFilename().split("\\.");
+                if (fileParts.length < 1)  throw  new StorageException("Invalid file name");
+                String extension =  fileParts[fileParts.length - 1];
 
-                String name =  Base64EncodedUUID.getBase64EncodedUUID() +  file.getContentType();
+                System.out.println( extension );
+                String name =  Base64EncodedUUID.getBase64EncodedUUID().substring(0, 6) + "." + extension  ;
                 Path destination =  this.rootPath.toAbsolutePath().resolve(name);
 
                 try(InputStream inputStream =  file.getInputStream()){
-                    Files.copy( inputStream,destination, StandardCopyOption.REPLACE_EXISTING  );
+                    ByteArrayOutputStream out =  new ByteArrayOutputStream();
+                    Thumbnails.of(inputStream).size(200,  200).toOutputStream(out);
+                    byte[] data =  out.toByteArray();
+                    InputStream inpStream = new ByteArrayInputStream(data);
+                    Files.copy( inpStream,destination, StandardCopyOption.REPLACE_EXISTING  );
                     account.setImage(name.toString());
                     accountRepo.save(account);
                 }
@@ -107,6 +120,7 @@ public class  AccountServiceImpl implements AccountService{
         Account  account =  this.getAccountByUsername(username);
         String filename =  account.getImage();
         Path imagePath =  Paths.get(properties.mediaUrl(), IMAGE_SUB_DIR, filename);
+        System.out.println(imagePath);
         try{
             Resource urlresource =  new UrlResource(imagePath.toAbsolutePath().toUri());
             if(urlresource.exists() ||  urlresource.isReadable()){
